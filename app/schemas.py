@@ -18,9 +18,19 @@ class TranslationResponse(TranslationBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    source: Optional[str] = "database"  # database, ai, or ai_fallback
     
     class Config:
         from_attributes = True
+
+
+class AITranslationResponse(BaseModel):
+    word: str
+    translation: str
+    part_of_speech: str
+    example: str
+    source: str = "ai"
+    model: Optional[str] = None
 
 
 class ProverbBase(BaseModel):
@@ -47,8 +57,8 @@ class ToneMarkingRequest(BaseModel):
 
 
 class ToneMarkingResponse(BaseModel):
-    original: str
-    tone_marked: str
+    original_text: str
+    tone_marked_text: str
 
 
 class WordOfTheDayResponse(BaseModel):
@@ -69,3 +79,9 @@ class SearchResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+class TranslationRequest(BaseModel):
+    word: str
+    lang: str = "yo"  # Default to Yoruba
+    use_ai: bool = False  # Whether to use AI if not in database
