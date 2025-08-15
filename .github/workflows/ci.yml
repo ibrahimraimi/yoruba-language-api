@@ -1,0 +1,195 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.11'
+  DATABASE_URL: 'sqlite:///./test.db'
+
+jobs:
+  # Lint and format check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort mypy
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=79 --statistics
+
+      - name: Check code formatting with black
+        run: |
+          black --check --diff .
+
+      - name: Check import sorting with isort
+        run: |
+          isort --check-only --diff .
+
+      - name: Type check with mypy
+        run: |
+          mypy app/ --ignore-missing-imports
+
+  # Security check
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      - name: Run security checks
+        run: |
+          bandit -r app/ -f json -o bandit-report.json || true
+          safety check
+
+  # Unit tests
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio httpx
+
+      - name: Run tests
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          API_KEY: test_api_key
+          OPENAI_API_KEY: test_key
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  # Integration tests
+  integration:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Start API server
+        run: |
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 10
+
+      - name: Run integration tests
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          API_KEY: test_api_key
+          OPENAI_API_KEY: test_key
+        run: |
+          pytest tests/ -v -m "integration" --tb=short
+
+  # Build Docker image
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/yoruba-language-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/yoruba-language-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy to staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add your staging deployment logic here
+          # Example: kubectl apply, docker-compose up, etc.
+
+  # Deploy to production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          # Add your production deployment logic here
+          # Example: kubectl apply, docker-compose up, etc.

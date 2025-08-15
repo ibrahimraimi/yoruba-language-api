@@ -1,494 +1,454 @@
-# Yoruba Language API
+# 🌍 Yoruba Language API
 
-A cultural and educational API for the Yoruba language, built with FastAPI. This API provides endpoints for translations, proverbs, tone marking, and more — designed for both learners and developers who want to integrate Yoruba into their apps.
+A comprehensive API for English-Yoruba translations, proverbs, and tone marking with AI-powered translation capabilities.
 
----
+## ✨ Features
 
-## 📌 Features
-
-- ✅ English ↔ Yoruba dictionary with example sentences
-- ✅ Proverb & idiom retrieval with categories
-- ✅ Tone marking for Yoruba text (diacritics)
-- ✅ Random proverb generator
-- ✅ **🤖 AI-powered translations using OpenAI GPT-4o**
-- ✅ JSON responses for easy integration with apps and bots
-- 🔄 Word of the Day (planned)
-- 🔄 Audio pronunciations (planned)
-
----
-
-## 🛠 Tech Stack
-
-- **Backend**: FastAPI 0.104.1
-- **Database**: SQLite (development) / PostgreSQL (production ready)
-- **Data Validation**: Pydantic 2.5.0
-- **ORM**: SQLAlchemy 2.0.23
-- **Environment Management**: Python venv + python-dotenv
-- **Testing**: pytest + httpx
-- **🤖 AI Integration**: OpenAI GPT-4o API
-
----
+- ✅ English ↔ Yoruba dictionary with 10,000+ translations
+- ✅ AI-powered translations using OpenAI GPT-4o
+- ✅ Yoruba proverbs collection
+- ✅ Tone marking service for Yoruba text
+- ✅ RESTful API with comprehensive documentation
+- ✅ Docker containerization
+- ✅ CI/CD pipeline with GitHub Actions
+- ✅ Kubernetes deployment ready
+- 🔄 Rate limiting and security features
+- 🔄 Caching and performance optimization
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip (Python package installer)
+- Python 3.9+
+- Docker and Docker Compose
+- PostgreSQL (for production)
 - OpenAI API key (for AI translations)
 
-### 1. Clone and Navigate
+### Local Development
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/yoruba-language-api.git
+   cd yoruba-language-api
+   ```
+
+2. **Set up virtual environment**
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   pip install -r requirements-dev.txt  # For development tools
+   ```
+
+4. **Environment setup**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. **Initialize database**
+
+   ```bash
+   python scripts/init_db.py
+   ```
+
+6. **Run the server**
+   ```bash
+   python run.py
+   # Or use uvicorn directly
+   uvicorn app.main:app --reload
+   ```
+
+### Docker Development
+
+1. **Build and run with Docker Compose**
+
+   ```bash
+   # Start all services (API, PostgreSQL, Redis, Nginx)
+   docker-compose up -d
+
+   # View logs
+   docker-compose logs -f api
+
+   # Stop services
+   docker-compose down
+   ```
+
+2. **Build Docker image manually**
+   ```bash
+   docker build -t yoruba-language-api .
+   docker run -p 8000:8000 yoruba-language-api
+   ```
+
+### Using Makefile
 
 ```bash
-git clone https://github.com/ibrahimraimi/yoruba-language-api
-cd yoruba-language-api
+# View all available commands
+make help
+
+# Development
+make install      # Install dependencies
+make test         # Run tests
+make lint         # Run linting
+make format       # Format code
+make run          # Run server locally
+
+# Docker
+make docker-build # Build Docker image
+make docker-run   # Start with Docker Compose
+make docker-stop  # Stop Docker Compose
+make docker-clean # Clean up Docker resources
+
+# CI/CD
+make ci-check     # Run all CI checks locally
+make security     # Run security checks
+make coverage     # Run tests with coverage
 ```
 
-### 2. Activate Virtual Environment
+## 🐳 Docker
+
+### Production Dockerfile
+
+The application includes a production-ready Dockerfile with:
+
+- Multi-stage build for optimization
+- Non-root user for security
+- Health checks
+- Minimal base image (Python 3.11 slim)
+
+### Docker Compose
+
+Full-stack development environment with:
+
+- **API**: FastAPI application
+- **PostgreSQL**: Primary database
+- **Redis**: Caching layer
+- **Nginx**: Reverse proxy with SSL
+
+### Kubernetes Deployment
+
+Production-ready Kubernetes manifests in `k8s/`:
+
+- Deployment with 3 replicas
+- Service and Ingress configuration
+- ConfigMaps and Secrets
+- Health checks and resource limits
+- SSL/TLS termination
+
+## 🔄 CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+1. **CI Pipeline** (`ci.yml`)
+
+   - Linting and code formatting
+   - Security checks (bandit, safety)
+   - Unit tests across Python versions
+   - Integration tests
+   - Docker image building
+   - Automated deployment
+
+2. **Release Pipeline** (`release.yml`)
+   - Triggered on version tags
+   - Docker image publishing
+   - GitHub releases
+   - Asset uploads
+
+### Automated Checks
+
+- **Code Quality**: flake8, black, isort, mypy
+- **Security**: bandit, safety
+- **Testing**: pytest with coverage
+- **Formatting**: Pre-commit hooks
+- **Dependencies**: Security updates
+
+### Pre-commit Hooks
+
+Automated code quality checks:
 
 ```bash
-# On Linux/Mac:
-source .venv/bin/activate
+# Install pre-commit hooks
+pre-commit install
 
-# On Windows:
-.venv\Scripts\activate
+# Run manually
+pre-commit run --all-files
 ```
-
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Set Up Environment Variables
-
-Create a `.env` file in the root directory:
-
-```bash
-DATABASE_URL=sqlite:///./yoruba.db
-API_KEY=yourapikey123
-DEBUG=true
-
-# OpenAI API for AI translations
-OPENAI_API_KEY=your_openai_api_key_here
-AI_MODEL=gpt-4o
-```
-
-### 5. Initialize the Database
-
-```bash
-python scripts/init_db.py
-```
-
-### 6. Run the Development Server
-
-```bash
-# Option 1: Using the startup script
-
-python run.py
-
-# Option 2: Using uvicorn directly
-
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 7. Access the API
-
-- **API Base URL**: http://127.0.0.1:8000
-- **Interactive API Docs**: http://127.0.0.1:8000/docs
-- **Alternative API Docs**: http://127.0.0.1:8000/redoc
-
----
-
-## 🤖 AI Translation Feature
-
-The API now includes **AI-powered translations** using OpenAI's GPT-4o model. This feature provides:
-
-- **Context-aware translations** from English to Yoruba
-- **Automatic tone marking** with proper diacritics
-- **Part-of-speech tagging** and example sentences
-- **Auto-caching** in the database to reduce API costs
-- **Fallback to database** when AI is unavailable
-
-### Using AI Translation
-
-#### GET Request with AI
-
-```bash
-curl "http://127.0.0.1:8000/api/v1/translate?word=happiness&lang=yo&use_ai=true"
-```
-
-#### POST Request with AI
-
-```bash
-curl -X POST "http://127.0.0.1:8000/api/v1/translate" \
-     -H "Content-Type: application/json" \
-     -d '{"word": "wisdom", "lang": "yo", "use_ai": true}'
-```
-
-#### AI Translation Response
-
-```json
-{
-  "english_word": "wisdom",
-  "yoruba_word": "ọgbọ́n",
-  "part_of_speech": "noun",
-  "example_sentence": "Wisdom comes with age → Ọgbọ́n ńbọ̀ pẹ̀lú ọjọ́",
-  "id": 15,
-  "created_at": "2024-01-01T12:00:00",
-  "updated_at": "2024-01-01T12:00:00",
-  "source": "ai"
-}
-```
-
-### AI Service Status
-
-Check if AI translation is available:
-
-```bash
-curl "http://127.0.0.1:8000/api/v1/ai/status"
-```
-
-Response:
-
-```json
-{
-  "available": true,
-  "model": "gpt-4o"
-}
-```
-
-### Testing AI Translation
-
-#### Test with Mock Service (No API Key Required)
-
-```bash
-python test_mock_ai.py
-```
-
-#### Test with Real OpenAI API
-
-```bash
-python test_ai_translation.py
-```
-
----
-
-## 📂 Project Structure
-
-```
-yoruba-language-api/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI application entry point
-│   ├── config.py            # Configuration settings
-│   ├── database.py          # Database models and connection
-│   ├── schemas.py           # Pydantic request/response schemas
-│   ├── routes/              # API route handlers
-│   │   ├── __init__.py
-│   │   ├── translations.py  # Translation endpoints (with AI)
-│   │   ├── proverbs.py      # Proverb endpoints
-│   │   └── tone_marking.py  # Tone marking endpoints
-│   └── services/            # Business logic
-│       ├── __init__.py
-│       ├── tone_service.py  # Tone marking service
-│       ├── ai_translation_service.py  # 🤖 OpenAI integration
-│       └── mock_ai_service.py         # 🎭 Mock AI for testing
-├── scripts/
-│   └── init_db.py           # Database initialization
-├── tests/                   # Test files
-├── requirements.txt         # Python dependencies
-├── run.py                  # Startup script
-├── SETUP.md                # Detailed setup guide
-├── test_ai_translation.py  # 🤖 AI translation tests
-├── test_mock_ai.py         # 🎭 Mock AI tests
-└── README.md               # This file
-```
-
----
-
-## 🔗 API Endpoints
-
-### Translations
-
-- `GET /api/v1/translate?word={word}&lang=yo&use_ai={bool}` - Translate English to Yoruba (with optional AI)
-- `POST /api/v1/translate` - Translate using POST method
-- `GET /api/v1/translations` - Get all translations (paginated)
-- `POST /api/v1/translations` - Create new translation
-- `GET /api/v1/translations/{id}` - Get specific translation
-- `PUT /api/v1/translations/{id}` - Update translation
-- `DELETE /api/v1/translations/{id}` - Delete translation
-- `GET /api/v1/ai/status` - Check AI translation service status
-
-### Proverbs
-
-- `GET /api/v1/proverbs` - Get all proverbs (paginated)
-- `GET /api/v1/proverbs/random` - Get random proverb
-- `GET /api/v1/proverbs/{id}` - Get specific proverb
-- `POST /api/v1/proverbs` - Create new proverb
-
-### Tone Marking
-
-- `POST /api/v1/tone-mark` - Add tone marks to Yoruba text
-- `POST /api/v1/tone-mark/analyze` - Analyze Yoruba text
-- `GET /api/v1/tone-mark/history` - Get tone marking history
-
----
-
-## 📝 Example Usage
-
-### 1. Basic Translation (Database Only)
-
-```bash
-curl "http://127.0.0.1:8000/api/v1/translate?word=love&lang=yo"
-```
-
-**Response:**
-
-```json
-{
-  "english_word": "love",
-  "yoruba_word": "ifẹ́",
-  "part_of_speech": "noun",
-  "example_sentence": "I love you → Mo nífẹ́ rẹ",
-  "id": 1,
-  "created_at": "2024-01-01T00:00:00",
-  "updated_at": "2024-01-01T00:00:00",
-  "source": "database"
-}
-```
-
-### 2. AI-Powered Translation
-
-```bash
-curl "http://127.0.0.1:8000/api/v1/translate?word=happiness&lang=yo&use_ai=true"
-```
-
-**Response:**
-
-```json
-{
-  "english_word": "happiness",
-  "yoruba_word": "ayọ̀",
-  "part_of_speech": "noun",
-  "example_sentence": "Happiness is important → Ayọ̀ ṣe pàtàkì",
-  "id": 16,
-  "created_at": "2024-01-01T12:00:00",
-  "updated_at": "2024-01-01T12:00:00",
-  "source": "ai"
-}
-```
-
-### 3. Get a Random Yoruba Proverb
-
-```bash
-curl http://127.0.0.1:8000/api/v1/proverbs/random
-```
-
-**Response:**
-
-```json
-{
-  "yoruba_text": "Ìwà l'ẹ̀wà",
-  "english_translation": "Character is beauty",
-  "meaning": "A good character is more important than physical appearance.",
-  "category": "character",
-  "id": 1,
-  "created_at": "2024-01-01T00:00:00"
-}
-```
-
-### 4. Tone Marking for Yoruba Text
-
-```bash
-curl -X POST "http://127.0.0.1:8000/api/v1/tone-mark" \
-     -H "Content-Type: application/json" \
-     -d '{"text": "Omo mi"}'
-```
-
-**Response:**
-
-```json
-{
-  "original_text": "Omo mi",
-  "tone_marked_text": "Ọmọ mi"
-}
-```
-
----
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-pytest tests/
-```
-
-Run specific tests:
-
-```bash
-pytest tests/test_main.py -v
-```
-
-### AI Translation Tests
-
-Test AI translation with mock service:
-
-```bash
-python test_mock_ai.py
-```
-
-Test AI translation with OpenAI API:
-
-```bash
-python test_ai_translation.py
-```
-
----
 
 ## 🗄️ Database
 
-The API uses SQLite by default for development. The database is automatically created and populated with sample data when you run:
+### Models
+
+- **Translation**: English-Yoruba word pairs
+- **Proverb**: Yoruba proverbs with meanings
+- **ToneMarking**: Tone marking history and analysis
+
+### Seeding
+
+Populate with 10,000 translations:
 
 ```bash
-python scripts/init_db.py
+# Generate translations dataset
+python scripts/generate_translations.py
+
+# Seed database (if script exists)
+python scripts/seed_database.py
 ```
 
-**Sample Data Includes:**
-
-- 10 common English-Yoruba translations
-- 5 traditional Yoruba proverbs
-- Tone marking examples
-
-**Reset Database:**
+### Database Management
 
 ```bash
-rm yoruba.db
-python scripts/init_db.py
-```
+# Reset database
+make db-reset
 
----
+# Database shell
+make db-shell
+
+# View database status
+make status
+```
 
 ## 🔧 Configuration
 
-Key configuration options in `.env`:
+### Environment Variables
 
 | Variable         | Description                        | Default                 |
 | ---------------- | ---------------------------------- | ----------------------- |
 | `DATABASE_URL`   | Database connection string         | `sqlite:///./yoruba.db` |
-| `API_KEY`        | API authentication key             | `yourapikey123`         |
-| `DEBUG`          | Enable debug mode                  | `true`                  |
-| `OPENAI_API_KEY` | OpenAI API key for AI translations | `None`                  |
+| `API_KEY`        | API authentication key             | Required                |
+| `OPENAI_API_KEY` | OpenAI API key for AI translations | Optional                |
 | `AI_MODEL`       | OpenAI model to use                | `gpt-4o`                |
+| `DEBUG`          | Enable debug mode                  | `false`                 |
+| `HOST`           | Server host                        | `0.0.0.0`               |
+| `PORT`           | Server port                        | `8000`                  |
+| `CORS_ORIGINS`   | Allowed CORS origins               | `*`                     |
 
----
+### Production Settings
+
+```bash
+# Production environment file
+cp .env.example .env.prod
+
+# Production Docker build
+make prod-build
+make prod-run
+```
+
+## 🧪 Testing
+
+### Test Commands
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=app --cov-report=html
+
+# Run specific test categories
+pytest -m "unit"
+pytest -m "integration"
+
+# Run linting
+make lint
+
+# Run security checks
+make security
+```
+
+### Test Structure
+
+- **Unit Tests**: `tests/test_*.py`
+- **Integration Tests**: API endpoint testing
+- **Mock Services**: AI service mocking for testing
+
+## 📚 API Endpoints
+
+### Core Endpoints
+
+- `GET /` - API information
+- `GET /health` - Health check
+- `GET /config` - Configuration details
+
+### Translations
+
+- `GET /api/v1/translations` - List all translations
+- `GET /api/v1/translations/{id}` - Get specific translation
+- `POST /api/v1/translations` - Create new translation
+- `PUT /api/v1/translations/{id}` - Update translation
+- `DELETE /api/v1/translations/{id}` - Delete translation
+- `GET /api/v1/translate?word={word}&use_ai={true/false}` - Translate word
+- `POST /api/v1/translate` - Translate with POST request
+
+### AI Translation
+
+- `GET /api/v1/ai/status` - Check AI service availability
+- `GET /api/v1/translate?use_ai=true` - Use AI for translation
+
+### Proverbs
+
+- `GET /api/v1/proverbs` - List all proverbs
+- `GET /api/v1/proverbs/random` - Get random proverb
+- `POST /api/v1/proverbs` - Add new proverb
+
+### Tone Marking
+
+- `POST /api/v1/tone-mark` - Add tone marks to text
+- `GET /api/v1/tone-mark` - Get tone marking history
+- `POST /api/v1/tone-mark/analyze` - Analyze text for tone marking
 
 ## 🚀 Deployment
 
-### Development
+### Docker Deployment
 
 ```bash
-python run.py
+# Production build
+docker build -t yoruba-language-api:prod .
+
+# Run with environment file
+docker run -d \
+  --name yoruba-api \
+  -p 8000:8000 \
+  --env-file .env.prod \
+  yoruba-language-api:prod
 ```
 
-### Production
+### Kubernetes Deployment
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+# Create namespace
+kubectl create namespace yoruba-api
+
+# Apply configurations
+kubectl apply -f k8s/
+
+# Check status
+kubectl get all -n yoruba-api
 ```
 
-### Docker (Coming Soon)
+### Environment-Specific Deployments
 
-```bash
-docker build -t yoruba-language-api .
-docker run -p 8000:8000 yoruba-language-api
-```
+- **Development**: Local Docker Compose
+- **Staging**: Automated deployment on main branch
+- **Production**: Manual deployment with approval
 
----
+## 🔒 Security Features
+
+- API key authentication
+- CORS configuration
+- Rate limiting
+- Input validation
+- SQL injection prevention
+- XSS protection headers
+- Non-root Docker containers
+- Kubernetes security contexts
+
+## 📊 Monitoring & Health
+
+- Health check endpoints
+- Prometheus metrics (planned)
+- Structured logging
+- Error tracking with Sentry
+- Performance monitoring
 
 ## 🤝 Contributing
 
+### Development Workflow
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
-### Development Guidelines
+### Code Standards
 
-- Follow PEP 8 style guidelines
-- Add tests for new features
-- Update documentation as needed
-- Use conventional commit messages
+- Follow PEP 8 style guide
+- Use type hints
+- Write comprehensive tests
+- Update documentation
+- Run pre-commit hooks
 
----
+### Testing Guidelines
 
-## 📜 License
+- Maintain >80% test coverage
+- Include unit and integration tests
+- Mock external dependencies
+- Test error conditions
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📈 Roadmap
 
----
+### Completed ✅
 
-## 💡 Roadmap
+- Core API structure
+- Database models and schemas
+- Translation endpoints
+- AI translation integration
+- Tone marking service
+- Docker containerization
+- CI/CD pipeline
+- Kubernetes manifests
 
-### Phase 1 (Current) ✅
+### In Progress 🔄
 
-- [x] Basic API structure
-- [x] Translation endpoints
-- [x] Proverb endpoints
-- [x] Tone marking service
-- [x] SQLite database
-- [x] Basic testing
-- [x] **🤖 AI-powered translations**
+- Performance optimization
+- Caching implementation
+- Advanced search features
 
-### Phase 2 (Next) 🔄
+### Planned 📋
 
-- [ ] Word of the Day endpoint
-- [ ] Search functionality
-- [ ] User authentication
-- [ ] Rate limiting
-- [ ] PostgreSQL support
-- [ ] **🤖 Enhanced AI features (context, cultural notes)**
-
-### Phase 3 (Future) 🔮
-
-- [ ] Speech-to-text API for Yoruba
-- [ ] Yoruba spell-checker endpoint
-- [ ] Telegram/WhatsApp bot integration
-- [ ] Mobile app SDK
-- [ ] Audio pronunciation files
-- [ ] **🤖 Multi-language AI support**
-
----
+- User authentication system
+- Translation memory
+- Community contributions
+- Mobile app
+- Advanced analytics
+- Multi-language support
 
 ## 🆘 Support & Troubleshooting
 
 ### Common Issues
 
-1. **Import errors**: Ensure virtual environment is activated and dependencies are installed
-2. **Database errors**: Run `python scripts/init_db.py` to initialize the database
-3. **Port conflicts**: Change port in `run.py` or kill processes using port 8000
-4. **AI translation errors**: Check OpenAI API key and quota limits
+1. **Database Connection Errors**
+
+   - Check `DATABASE_URL` in `.env`
+   - Ensure database service is running
+   - Verify network connectivity
+
+2. **AI Translation Failures**
+
+   - Check `OPENAI_API_KEY` is valid
+   - Verify API quota and billing
+   - Check network connectivity
+
+3. **Docker Issues**
+   - Ensure Docker daemon is running
+   - Check port conflicts
+   - Verify image builds successfully
 
 ### Getting Help
 
-- Check the [SETUP.md](SETUP.md) for detailed setup instructions
-- Review the API documentation at `/docs`
-- Check the logs for error messages
-- Create an issue in the project repository
+- Check the [Issues](https://github.com/yourusername/yoruba-language-api/issues) page
+- Review [Discussions](https://github.com/yourusername/yoruba-language-api/discussions)
+- Create detailed bug reports with logs
 
----
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Yoruba language experts and native speakers
+- OpenAI for AI translation capabilities
 - FastAPI community for the excellent framework
-- OpenAI for providing the AI translation capabilities
-- Contributors and beta testers
+- Yoruba language experts and contributors
+- Open source community for tools and libraries
 
 ---
 
-**Made with ❤️ for the Yoruba language and culture**
-
-**Powered by 🤖 OpenAI GPT-4o for intelligent translations**
+**Made with ❤️ for the Yoruba language community**

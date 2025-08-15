@@ -1,0 +1,32 @@
+# Development and testing dependencies
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+httpx==0.25.2
+
+# Code quality and formatting
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
+mypy==1.7.1
+
+# Security
+bandit==1.7.5
+safety==2.3.5
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.8
+
+# Development tools
+pre-commit==3.5.0
+ipython==8.17.2
+ipdb==0.13.13
+
+# Database tools
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Monitoring and debugging
+sentry-sdk==1.38.0
