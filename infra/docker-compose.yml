@@ -33,7 +33,9 @@ services:
 
   # Yoruba Language API
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
     ports:
       - "8000:8000"
     environment:
@@ -51,7 +53,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./logs:/app/logs
+      - ../logs:/app/logs
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

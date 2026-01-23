@@ -1,3 +1,8 @@
+# Configuration
+VENV = .venv
+PYTHON = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
+
 .PHONY: help build run stop clean test lint format docker-build docker-run docker-stop docker-clean docker-push
 
 # Default target
@@ -26,40 +31,40 @@ help:
 
 # Development commands
 install:
-	pip install -r requirements.txt
-	pip install -r requirements-dev.txt
+	$(PIP) install -r core/api/requirements.txt
+	$(PIP) install -r core/api/requirements-dev.txt
 
 test:
-	pytest tests/ -v --cov=app --cov-report=html
+	PYTHONPATH=core/api $(PYTHON) -m pytest tests/ -v --cov=core/api/app --cov-report=html
 
 lint:
-	flake8 app/ tests/ --max-line-length=79
-	black --check app/ tests/
-	isort --check-only app/ tests/
-	mypy app/ --ignore-missing-imports
+	$(PYTHON) -m flake8 core/api/app/ tests/ --max-line-length=79
+	$(PYTHON) -m black --check core/api/app/ tests/
+	$(PYTHON) -m isort --check-only core/api/app/ tests/
+	PYTHONPATH=core/api $(PYTHON) -m mypy core/api/app/ --ignore-missing-imports
 
 format:
-	black app/ tests/
-	isort app/ tests/
+	$(PYTHON) -m black core/api/app/ tests/
+	$(PYTHON) -m isort core/api/app/ tests/
 
 run:
-	uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	PYTHONPATH=core/api $(PYTHON) -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 db-init:
-	python scripts/init_db.py
+	PYTHONPATH=core/api $(PYTHON) core/scripts/init_db.py
 
 # Docker commands
 docker-build:
-	docker build -t yoruba-language-api:latest .
+	docker build -f infra/docker/Dockerfile -t yoruba-language-api:latest .
 
 docker-run:
-	docker-compose up -d
+	docker-compose -f infra/docker-compose.yml up -d
 
 docker-stop:
-	docker-compose down
+	docker-compose -f infra/docker-compose.yml down
 
 docker-clean:
-	docker-compose down -v --remove-orphans
+	docker-compose -f infra/docker-compose.yml down -v --remove-orphans
 	docker system prune -f
 	docker volume prune -f
 
@@ -71,23 +76,23 @@ docker-push:
 ci-check: lint test security
 
 security:
-	bandit -r app/ -f json -o bandit-report.json
-	safety check
+	$(PYTHON) -m bandit -r core/api/app/ -f json -o bandit-report.json
+	$(PYTHON) -m safety check
 
 coverage:
-	pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
+	PYTHONPATH=core/api $(PYTHON) -m pytest tests/ -v --cov=core/api/app --cov-report=xml --cov-report=html
 	@echo "Coverage report generated in htmlcov/"
 
 # Database commands
 db-reset:
-	docker-compose down -v
-	docker-compose up -d postgres
+	docker-compose -f infra/docker-compose.yml down -v
+	docker-compose -f infra/docker-compose.yml up -d postgres
 	sleep 5
-	python scripts/init_db.py
+	PYTHONPATH=core/api $(PYTHON) core/scripts/init_db.py
 
 # Production commands
 prod-build:
-	docker build -t yoruba-language-api:prod --target production .
+	docker build -f infra/docker/Dockerfile -t yoruba-language-api:prod --target production .
 
 prod-run:
 	docker run -d \
@@ -98,17 +103,17 @@ prod-run:
 
 # Utility commands
 logs:
-	docker-compose logs -f api
+	docker-compose -f infra/docker-compose.yml logs -f api
 
 shell:
-	docker-compose exec api bash
+	docker-compose -f infra/docker-compose.yml exec api bash
 
 db-shell:
-	docker-compose exec postgres psql -U yoruba_user -d yoruba_api
+	docker-compose -f infra/docker-compose.yml exec postgres psql -U yoruba_user -d yoruba_api
 
 # Health checks
 health:
 	curl -f http://localhost:8000/health || echo "API is not healthy"
 
 status:
-	docker-compose ps
+	docker-compose -f infra/docker-compose.yml ps

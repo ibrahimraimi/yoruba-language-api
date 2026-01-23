@@ -1,0 +1,180 @@
+# Yoruba Language API - Setup Guide
+
+This guide will help you get the Yoruba Language API up and running on your local machine.
+
+## Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package installer)
+- Git
+
+## Step 1: Clone and Navigate to Project
+
+```bash
+git clone https://github.com/ibrahimraimi/yoruba-api.git
+cd yoruba-api
+```
+
+## Step 2: Activate Virtual Environment
+
+A virtual environment is recommended. To set one up and activate it:
+
+```bash
+python -m venv .venv
+
+# On Linux/Mac:
+source .venv/bin/activate
+
+# On Windows:
+.venv\Scripts\activate
+```
+
+## Step 3: Install Dependencies
+
+From the root directory, you can use the Makefile:
+
+```bash
+make install
+```
+
+Or install manually:
+
+```bash
+pip install -r core/api/requirements.txt
+pip install -r core/api/requirements-dev.txt
+```
+
+## Step 4: Set Up Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Or create manually with these contents:
+DATABASE_URL=sqlite:///./yoruba.db
+API_KEY=yourapikey123
+DEBUG=true
+```
+
+## Step 5: Initialize the Database
+
+```bash
+make db-init
+```
+
+Or manually:
+
+```bash
+PYTHONPATH=core/api python core/scripts/init_db.py
+```
+
+This will:
+
+- Create the SQLite database
+- Create all necessary tables
+- Populate with sample translations and proverbs
+
+## Step 6: Run the Application
+
+### Option 1: Using the Makefile
+
+```bash
+make run
+```
+
+### Option 2: Using uvicorn directly
+
+```bash
+PYTHONPATH=core/api uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Step 7: Access the API
+
+- **API Base URL**: http://127.0.0.1:8000
+- **Interactive API Docs**: http://127.0.0.1:8000/docs
+- **Alternative API Docs**: http://127.0.0.1:8000/redoc
+
+## Testing the API
+
+### Test the root endpoint:
+
+```bash
+curl http://127.0.0.1:8000/
+```
+
+### Test translation:
+
+```bash
+curl "http://127.0.0.1:8000/api/v1/translate?word=love&lang=yo"
+```
+
+### Test proverbs:
+
+```bash
+curl http://127.0.0.1:8000/api/v1/proverbs/random
+```
+
+### Test tone marking:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/api/v1/tone-mark" \
+     -H "Content-Type: application/json" \
+     -d '{"text": "Omo mi"}'
+```
+
+## Running Tests
+
+```bash
+make test
+```
+
+## Project Structure
+
+```
+yoruba-language-api/
+├── core/
+│   ├── api/                 # FastAPI application and services
+│   │   ├── app/             # Application source code
+│   │   ├── requirements.txt
+│   │   └── run.py
+│   └── scripts/             # Database scripts and utilities
+├── infra/                   # Infrastructure configurations
+│   ├── docker/              # Dockerfiles
+│   ├── k8s/                 # Kubernetes manifests
+│   └── nginx/               # Nginx configuration
+├── tests/                   # Centralized test directory
+│   ├── unit/                # Unit tests
+│   └── integration/         # Integration tests
+├── Makefile                 # Root orchestration
+└── web/docs/                # Project documentation
+```
+
+## Troubleshooting
+
+### Common Issues:
+
+1. **Import errors**: Make sure you're in the virtual environment and have set PYTHONPATH=core/api if running outside of the Makefile.
+2. **Database errors**: Run `make db-init` to initialize the database.
+3. **Port already in use**: Kill the process using port 8000 or change the port in the uvicorn command.
+
+### Database Reset:
+
+To reset the database:
+
+```bash
+rm yoruba.db
+make db-init
+```
+
+## Next Steps
+
+- Add more translations and proverbs to the database.
+- Implement additional features like audio pronunciations.
+- Add authentication and rate limiting.
+- Deploy to production using the manifests in infra/k8s/.
+
+## Support
+
+If you encounter any issues, check the logs or create an issue in the project repository.
