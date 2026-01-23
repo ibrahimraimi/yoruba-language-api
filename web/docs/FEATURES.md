@@ -1,0 +1,84 @@
+# Project Features
+
+The Yoruba Language API is a robust system designed for comprehensive Yoruba language processing and translation. Below is an overview of its core capabilities, technical features, recent changes, and planned improvements.
+
+## Core Features
+
+### Dictionary Service
+
+A high-performance dictionary containing over 10,000+ English-Yoruba translations. It supports:
+
+- Bidirectional lookup (English to Yoruba and vice versa).
+- Detailed translation metadata.
+- CRUD operations for translation management.
+
+### AI-Powered Translation
+
+Leverages OpenAI GPT-4o to provide context-aware translations.
+
+- Handles complex sentences beyond simple dictionary lookups.
+- Fallback mechanisms for dictionary-based translations.
+- Configurable AI models through environment settings.
+
+### Yoruba Proverbs
+
+A curated collection of traditional Yoruba proverbs.
+
+- Random proverb retrieval for daily inspiration.
+- Comprehensive collection with meanings and cultural context.
+
+### Tone Marking
+
+A specialized service for correctly marking tones in Yoruba text.
+
+- Essential for phonological accuracy in written Yoruba.
+- Supports text analysis and automated tone marking.
+
+---
+
+## Technical Stack and Infrastructure
+
+- **Framework**: FastAPI for high-performance, asynchronous API development.
+- **Database**: PostgreSQL (Production) and SQLite (Development/Local).
+- **Caching**: Redis-ready for optimized query performance.
+- **Containerization**: Full Docker support with Docker Compose for local orchestration.
+- **Orchestration**: Kubernetes manifests for production-grade deployments.
+- **CI/CD**: Automated GitHub Actions for testing, security scanning, and deployments.
+- **Security**:
+  - API Key Authentication.
+  - Rate limiting.
+  - CORS security.
+  - Non-root Docker execution.
+
+---
+
+## Recent Changes
+
+### Monorepo Restructuring
+
+- Restructured the codebase into a monorepo-style setup.
+- Organized code into `core/api`, `core/scripts`, and `infra/`.
+- Updated build and run configurations (Makefile, Docker, Compose) to support the new structure.
+
+### AI Translation Integration
+
+- Integrated OpenAI's GPT-4o into the translation pipeline.
+- Added `/api/v1/ai/status` and AI-specific translation parameters.
+- Implemented mock AI services for testing environments.
+
+### Infrastructure and DevOps
+
+- **Dockerization**: Created optimized multi-stage Dockerfiles.
+- **CI/CD Pipeline**: Established workflows for linting, security (Bandit/Safety), and automated testing.
+- **Kubernetes Support**: Added K8s manifests for scaling and production reliability.
+
+---
+
+## Potential Improvements
+
+- [ ] **User Authentication**: Implement OAuth2 or JWT-based user accounts for personalized features.
+- [ ] **Advanced Search**: Add fuzzy matching and full-text search capabilities using Elasticsearch or PostgreSQL FTS.
+- [ ] **Translation Memory**: Store and reuse previous human-verified translations to improve accuracy.
+- [ ] **Community Contributions**: A crowdsourcing interface for users to suggest new translations and proverbs.
+- [ ] **Mobile SDK/App**: Dedicated libraries for mobile developers to integrate Yoruba services easily.
+- [ ] **Performance Caching**: Implement robust Redis caching for frequently accessed dictionary terms.

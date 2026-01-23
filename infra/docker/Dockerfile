@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app/core/api
 
 # Set work directory
 WORKDIR /app
@@ -18,14 +18,15 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
-COPY requirements.txt .
+COPY core/api/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip \
   && pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY core/api/ ./core/api/
+COPY core/scripts/ ./core/scripts/
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app \

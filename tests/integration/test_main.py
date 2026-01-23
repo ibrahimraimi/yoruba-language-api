@@ -28,12 +28,10 @@ def test_health_check():
 def test_translate_endpoint():
     """Test the translate endpoint."""
     response = client.get("/api/v1/translate?word=love&lang=yo")
-    # This will fail if no database is set up, which is expected
-    assert response.status_code in [404, 500]
+    assert response.status_code == 200
 
 
 def test_proverbs_endpoint():
     """Test the proverbs endpoint."""
     response = client.get("/api/v1/proverbs")
-    # This will fail if no database is set up, which is expected
-    assert response.status_code in [404, 500]
+    assert response.status_code == 200
