@@ -1,0 +1,91 @@
+---
+title: Web Deployment (Docker)
+description: Guide to setting up and running the unified web applications (www and docs) using Docker
+---
+
+This guide explains how to bundle and deploy both the main website (`www`) and the documentation (`docs`) as a single unit using the isolated Docker setup found in the `/web` directory.
+
+## Overview
+
+The web deployment uses a multi-stage Docker build to compile both Next.js applications into a single image. Nginx acts as a reverse proxy within the container to route traffic:
+- `/` routes to the **Main Website** (running on port 3000)
+- `/docs` routes to the **Documentation** (running on port 3001)
+
+## Setup Locally
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) installed and running.
+- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop).
+
+### Preparation
+No special preparation is needed as the Dockerfile handles all dependencies (Bun for building, Node.js for running).
+
+## How to Run
+
+Navigate to the `web` directory and use Docker Compose:
+
+```bash
+cd web
+docker compose up -d --build
+```
+
+### Commands
+- **Start**: `docker compose up -d`
+- **Rebuild and Start**: `docker compose up -d --build`
+- **Stop**: `docker compose down`
+- **View Logs**: `docker logs web-web-1`
+
+## How to Test
+
+Once the container is running and healthy (it may take a few seconds for the Next.js apps to start), you can verify the deployment:
+
+### 1. Access via Browser
+- **Main Website**: [http://localhost:3000](http://localhost:3000)
+- **Documentation**: [http://localhost:3000/docs](http://localhost:3000/docs)
+
+### 2. Verify via Terminal
+You can use `curl` or `wget` to check the response codes:
+
+```bash
+# Check root
+curl -I http://localhost:3000
+
+# Check documentation
+curl -I http://localhost:3000/docs
+```
+
+## Important Architecture Details
+
+### Isolated Configuration
+The Docker setup in `/web` is entirely independent of the core API's infrastructure. It contains its own:
+- `Dockerfile`
+- `docker-compose.yml`
+- `nginx.conf`
+- `.dockerignore`
+
+### Next.js Standalone Mode
+Both apps are built using Next.js **Standalone Output**. This significantly reduces the final image size by only including the necessary files to run the production server.
+
+### Subpath Routing
+The documentation app is configured with a `basePath: '/docs'`. This is crucial for:
+- Correctly routing internal links.
+- Loading static assets (JS, CSS, Images) from the `/docs/_next/static/` path.
+
+## Troubleshooting
+
+### 502 Bad Gateway
+If you see a 502 error, it usually means Nginx has started but the Next.js apps are still initializing or have crashed. 
+
+Check the logs to see the startup progress:
+```bash
+docker logs web-web-1
+```
+The logs are prefixed with `[www]` and `[docs]` to help identify which app is reporting information.
+
+### Port Conflicts
+By default, the web container maps internal port 80 to your local port **3000**. If port 3000 is already in use on your machine, you can change the mapping in `web/docker-compose.yml`:
+
+```yaml
+ports:
+  - "YOUR_PORT:80"
+```
