@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { RootProvider } from "fumadocs-ui/provider/next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { siteConfig } from "@/config/site";
 
 import "@/styles/globals.css";
+import { siteConfig } from "@/config/site";
+import { SiteHeader } from "@/components/landing/site-header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@ibrahimraimi",
+    creator: "@ibrahimraimi_",
   },
   icons: {
     icon: "/favicon.ico",
@@ -76,9 +76,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <RootProvider>{children}</RootProvider>
+        <SiteHeader />
+        <main className="">{children}</main>
       </body>
     </html>
   );
