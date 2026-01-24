@@ -1,1 +1,1 @@
-# Yoruba Language API Package
+# Yoruba API Package

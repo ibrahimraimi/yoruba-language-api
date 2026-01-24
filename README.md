@@ -1,6 +1,6 @@
-# Yoruba Language API
+# Yoruba API
 
-The Yoruba Language API is a comprehensive platform for English-Yoruba translations, cultural proverbs, and linguistic services. It leverages modern asynchronous web frameworks and artificial intelligence to provide high-quality language processing capabilities.
+The Yoruba API is a comprehensive platform for English-Yoruba translations, cultural proverbs, and linguistic services. It leverages modern asynchronous web frameworks and artificial intelligence to provide high-quality language processing capabilities.
 
 ## Repository Overview
 
@@ -68,4 +68,4 @@ make security
 
 ---
 
-_Yoruba Language API is an open-source initiative dedicated to preserving and empowering the Yoruba language in the digital age._
+_Yoruba API is an open-source initiative dedicated to preserving and empowering the Yoruba language in the digital age._

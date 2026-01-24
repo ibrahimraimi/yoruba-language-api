@@ -31,7 +31,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Yoruba Language API
+  # Yoruba API
   api:
     build:
       context: ..

@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Yoruba Language API",
+    title="Yoruba API",
     description="A cultural and educational API for the Yoruba language",
     version="1.0.0",
     lifespan=lifespan
@@ -54,7 +54,7 @@ app.include_router(
 @app.get("/")
 async def root():
     return {
-        "message": "Welcome to Yoruba Language API",
+        "message": "Welcome to Yoruba API",
         "version": "1.0.0",
         "docs": "/docs",
         "endpoints": {
@@ -67,7 +67,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "yoruba-language-api"}
+    return {"status": "healthy", "service": "yoruba-api"}
 
 
 @app.get("/config")

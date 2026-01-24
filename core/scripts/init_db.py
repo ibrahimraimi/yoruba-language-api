@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database initialization script for Yoruba Language API.
+Database initialization script for Yoruba API.
 Populates the database with sample translations and proverbs.
 """
 
@@ -150,6 +150,6 @@ def init_database():
 
 
 if __name__ == "__main__":
-    print("Initializing Yoruba Language API Database...")
+    print("Initializing Yoruba API Database...")
     init_database()
     print("Database initialization complete!")

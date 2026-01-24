@@ -1,5 +1,5 @@
 """
-AI Translation Service for Yoruba Language API.
+AI Translation Service for Yoruba API.
 Uses OpenAI GPT models to provide context-aware translations.
 """
 

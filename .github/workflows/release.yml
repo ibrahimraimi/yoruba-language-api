@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: yoruba-language-api
+  IMAGE_NAME: yoruba-api
 
 jobs:
   release:
@@ -71,6 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/yoruba-language-api.tar.gz
-          asset_name: yoruba-language-api.tar.gz
+          asset_path: ./dist/yoruba-api.tar.gz
+          asset_name: yoruba-api.tar.gz
           asset_content_type: application/gzip

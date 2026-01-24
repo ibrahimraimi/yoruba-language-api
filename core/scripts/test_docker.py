@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Docker setup for Yoruba Language API.
+Test Docker setup for Yoruba API.
 """
 
 import subprocess
@@ -50,7 +50,7 @@ def build_docker_image():
     """Build the Docker image."""
     print("🔨 Building Docker image...")
     success, stdout, stderr = run_command(
-        "docker build -t yoruba-language-api:test ."
+        "docker build -t yoruba-api:test ."
     )
     if success:
         print("✅ Docker image built successfully")
@@ -72,7 +72,7 @@ def run_docker_container():
     # Run new container
     success, stdout, stderr = run_command(
         "docker run -d --name yoruba-test -p 8001:8000 "
-        "yoruba-language-api:test"
+        "yoruba-api:test"
     )
     
     if success:
@@ -158,13 +158,13 @@ def cleanup():
     print("🧹 Cleaning up test resources...")
     run_command("docker stop yoruba-test || true", check=False)
     run_command("docker rm yoruba-test || true", check=False)
-    run_command("docker rmi yoruba-language-api:test || true", check=False)
+    run_command("docker rmi yoruba-api:test || true", check=False)
     print("✅ Cleanup completed")
 
 
 def main():
     """Main test function."""
-    print("🧪 Yoruba Language API - Docker Test Suite")
+    print("🧪 Yoruba API - Docker Test Suite")
     print("=" * 50)
     
     try:

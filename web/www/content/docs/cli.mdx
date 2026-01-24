@@ -1,0 +1,47 @@
+---
+title: CLI Reference
+description: Manage the Yoruba API from your terminal
+---
+
+The project uses a `Makefile` to provide a simple and consistent command-line interface for common development and operational tasks.
+
+## General Commands
+
+### `make help`
+Display available commands and their descriptions.
+
+### `make install`
+Install Python dependencies from `requirements.txt` and `requirements-dev.txt`.
+
+### `make run`
+Run the FastAPI server locally with auto-reload enabled.
+
+## Database Management
+
+### `make db-init`
+Initialize the SQLite database and populate it with sample translations and proverbs.
+
+### `make db-reset`
+Reset the database by removing the current instance and re-initializing it.
+
+## Quality and Testing
+
+### `make lint`
+Run linting checks using `flake8`, `black`, `isort`, and `mypy`.
+
+### `make format`
+Format the codebase automatically with `black` and `isort`.
+
+### `make test`
+Run all tests and generate a coverage report.
+
+## Docker Operations
+
+### `make docker-build`
+Build the production-ready Docker image.
+
+### `make docker-run`
+Start all services (API, Postgres, Redis, Nginx) using Docker Compose.
+
+### `make docker-stop`
+Stop and remove Docker Compose services.

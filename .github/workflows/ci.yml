@@ -164,8 +164,8 @@ jobs:
           file: infra/docker/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/yoruba-language-api:latest
-            ${{ secrets.DOCKER_USERNAME }}/yoruba-language-api:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/yoruba-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/yoruba-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
