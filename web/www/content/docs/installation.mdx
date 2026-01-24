@@ -1,6 +1,9 @@
-# Yoruba Language API - Setup Guide
+---
+title: Installation
+description: Step-by-step guide to setting up the Yoruba API locally
+---
 
-This guide will help you get the Yoruba Language API up and running on your local machine.
+This guide will help you get the Yoruba API up and running on your local machine.
 
 ## Prerequisites
 
@@ -53,9 +56,10 @@ Create a `.env` file in the root directory:
 cp .env.example .env
 
 # Or create manually with these contents:
-DATABASE_URL=sqlite:///./yoruba.db
-API_KEY=yourapikey123
 DEBUG=true
+API_KEY=your_api_key_here
+DATABASE_URL=sqlite:///./database/yoruba.db
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ## Step 5: Initialize the Database
@@ -133,7 +137,7 @@ make test
 ## Project Structure
 
 ```
-yoruba-language-api/
+yoruba-api/
 ├── core/
 │   ├── api/                 # FastAPI application and services
 │   │   ├── app/             # Application source code

@@ -1,5 +1,5 @@
 """
-Basic tests for the Yoruba Language API.
+Basic tests for the Yoruba API.
 """
 
 from fastapi.testclient import TestClient
@@ -14,7 +14,7 @@ def test_read_root():
     assert response.status_code == 200
     data = response.json()
     assert "message" in data
-    assert data["message"] == "Welcome to Yoruba Language API"
+    assert data["message"] == "Welcome to Yoruba API"
 
 
 def test_health_check():

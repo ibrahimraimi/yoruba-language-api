@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple startup script for the Yoruba Language API.
+Simple startup script for the Yoruba API.
 """
 
 import uvicorn

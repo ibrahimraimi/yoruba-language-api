@@ -7,7 +7,7 @@ PIP = $(VENV)/bin/pip
 
 # Default target
 help:
-	@echo "Yoruba Language API - Available Commands:"
+	@echo "Yoruba API - Available Commands:"
 	@echo ""
 	@echo "Development:"
 	@echo "  install     Install Python dependencies"
@@ -55,7 +55,7 @@ db-init:
 
 # Docker commands
 docker-build:
-	docker build -f infra/docker/Dockerfile -t yoruba-language-api:latest .
+	docker build -f infra/docker/Dockerfile -t yoruba-api:latest .
 
 docker-run:
 	docker-compose -f infra/docker-compose.yml up -d
@@ -69,8 +69,8 @@ docker-clean:
 	docker volume prune -f
 
 docker-push:
-	docker tag yoruba-language-api:latest $(DOCKER_USERNAME)/yoruba-language-api:latest
-	docker push $(DOCKER_USERNAME)/yoruba-language-api:latest
+	docker tag yoruba-api:latest $(DOCKER_USERNAME)/yoruba-api:latest
+	docker push $(DOCKER_USERNAME)/yoruba-api:latest
 
 # CI/CD commands
 ci-check: lint test security
@@ -92,14 +92,14 @@ db-reset:
 
 # Production commands
 prod-build:
-	docker build -f infra/docker/Dockerfile -t yoruba-language-api:prod --target production .
+	docker build -f infra/docker/Dockerfile -t yoruba-api:prod --target production .
 
 prod-run:
 	docker run -d \
 		--name yoruba-api-prod \
 		-p 8000:8000 \
 		--env-file .env.prod \
-		yoruba-language-api:prod
+		yoruba-api:prod
 
 # Utility commands
 logs:

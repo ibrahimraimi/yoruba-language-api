@@ -1,6 +1,9 @@
-# CI/CD and Docker Setup Guide
+---
+title: Development & CI/CD
+description: Guide to the CI/CD pipeline and Docker environment for the Yoruba API
+---
 
-This document provides a comprehensive guide to the CI/CD pipeline and Docker containerization setup for the Yoruba Language API.
+This document provides a comprehensive guide to the CI/CD pipeline and Docker containerization setup for the Yoruba API.
 
 ## Docker Setup
 
@@ -45,10 +48,10 @@ make docker-clean
 
 ```bash
 # Build image
-docker build -f infra/docker/Dockerfile -t yoruba-language-api .
+docker build -f infra/docker/Dockerfile -t yoruba-api .
 
 # Run container
-docker run -p 8000:8000 yoruba-language-api
+docker run -p 8000:8000 yoruba-api
 ```
 
 ## CI/CD Pipeline
@@ -105,14 +108,11 @@ pre-commit run --all-files
 # Kubernetes deployment
 kubectl create namespace yoruba-api
 kubectl apply -f infra/k8s/
-
-# Check status
-kubectl get all -n yoruba-api
 ```
 
-## Troubleshooting
+### Troubleshooting
 
-### Debug Commands
+#### Debug Commands
 
 Using the root Makefile:
 
@@ -123,4 +123,4 @@ Using the root Makefile:
 
 ---
 
-**This setup provides a production-ready, scalable, and maintainable infrastructure for the Yoruba Language API.**
+**This setup provides a production-ready, scalable, and maintainable infrastructure for the Yoruba API.**
