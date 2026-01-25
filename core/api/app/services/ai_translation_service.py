@@ -4,14 +4,13 @@ Uses OpenAI GPT models to provide context-aware translations.
 """
 
 import json
-import logging
 from typing import Dict, Optional
 from openai import AsyncOpenAI
+import structlog
 from app.config import settings
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure structured logging
+logger = structlog.get_logger()
 
 
 class AITranslationService:
@@ -23,13 +22,11 @@ class AITranslationService:
         
         if settings.openai_api_key:
             self.client = AsyncOpenAI(api_key=settings.openai_api_key)
-            logger.info(
-                f"AI Translation Service initialized with model: {self.model}"
-            )
+        if settings.openai_api_key:
+            self.client = AsyncOpenAI(api_key=settings.openai_api_key)
+            logger.info("ai_service_initialized", model=self.model)
         else:
-            logger.warning(
-                "OpenAI API key not found. AI translations will not work."
-            )
+            logger.warning("openai_key_missing", message="AI translations will not work")
     
     async def translate_to_yoruba(self, english_text: str) -> Dict[str, any]:
         """Translate English text to Yoruba using AI."""
@@ -59,7 +56,7 @@ class AITranslationService:
             return self._parse_ai_response(ai_response, english_text)
             
         except Exception as e:
-            logger.error(f"AI translation failed: {str(e)}")
+            logger.error("ai_translation_failed", error=str(e), word=english_text)
             raise Exception(f"AI translation failed: {str(e)}")
     
     def _create_translation_prompt(self, english_text: str) -> str:
