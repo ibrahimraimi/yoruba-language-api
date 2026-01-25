@@ -1,18 +1,22 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from datetime import datetime
 from app.config import settings
 
-# Create database engine
-engine = create_engine(
+# Create async database engine
+engine = create_async_engine(
     settings.database_url,
-    connect_args={"check_same_thread": False} 
-    if "sqlite" in settings.database_url else {}
+    echo=settings.debug,
 )
 
-# Create session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create async session factory
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False
+)
 
 # Create base class for models
 Base = declarative_base()
@@ -54,10 +58,10 @@ class ToneMarking(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# Dependency to get database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Dependency to get async database session
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()

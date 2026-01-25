@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from typing import List
 
 from app.database import get_db, Translation
@@ -24,7 +25,7 @@ async def translate_word(
         False, 
         description="Use AI translation if not in database"
     ),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Translate an English word to Yoruba"""
     if lang.lower() != "yo":
@@ -34,9 +35,10 @@ async def translate_word(
         )
     
     # First, try to find in database
-    translation = db.query(Translation).filter(
-        Translation.english_word.ilike(f"%{word}%")
-    ).first()
+    result = await db.execute(
+        select(Translation).where(Translation.english_word.ilike(f"%{word}%"))
+    )
+    translation = result.scalar_one_or_none()
     
     if translation:
         # Return database result
@@ -55,7 +57,7 @@ async def translate_word(
     if use_ai and is_ai_available():
         try:
             # Get AI translation
-            ai_result = translate_to_yoruba(word)
+            ai_result = await translate_to_yoruba(word)
             
             # Save AI translation to database for future use
             db_translation = Translation(
@@ -65,8 +67,8 @@ async def translate_word(
                 example_sentence=ai_result['example']
             )
             db.add(db_translation)
-            db.commit()
-            db.refresh(db_translation)
+            await db.commit()
+            await db.refresh(db_translation)
             
             # Return AI result
             return TranslationResponse(
@@ -106,7 +108,7 @@ async def translate_word(
 @router.post("/translate", response_model=TranslationResponse)
 async def translate_word_post(
     request: TranslationRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Translate an English word to Yoruba using POST method"""
     return await translate_word(
@@ -120,13 +122,13 @@ async def translate_word_post(
 @router.post("/translations", response_model=TranslationResponse)
 async def create_translation(
     translation: TranslationCreate,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Create a new translation"""
     db_translation = Translation(**translation.dict())
     db.add(db_translation)
-    db.commit()
-    db.refresh(db_translation)
+    await db.commit()
+    await db.refresh(db_translation)
     
     return TranslationResponse(
         english_word=db_translation.english_word,
@@ -144,10 +146,11 @@ async def create_translation(
 async def get_all_translations(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get all translations with pagination"""
-    translations = db.query(Translation).offset(skip).limit(limit).all()
+    result = await db.execute(select(Translation).offset(skip).limit(limit))
+    translations = result.scalars().all()
     
     return [
         TranslationResponse(

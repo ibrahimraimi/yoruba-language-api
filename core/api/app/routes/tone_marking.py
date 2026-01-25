@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from app.database import get_db, ToneMarking
 from app.schemas import ToneMarkingRequest, ToneMarkingResponse
@@ -11,7 +12,7 @@ router = APIRouter()
 @router.post("/tone-mark", response_model=ToneMarkingResponse)
 async def mark_tones(
     request: ToneMarkingRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Add tone marks (diacritics) to Yoruba text"""
     try:
@@ -23,7 +24,7 @@ async def mark_tones(
             tone_marked_text=tone_marked_text
         )
         db.add(db_tone_marking)
-        db.commit()
+        await db.commit()
         
         return ToneMarkingResponse(
             original=request.text,
@@ -40,10 +41,11 @@ async def mark_tones(
 async def get_tone_marking_history(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get history of tone marking requests"""
-    history = db.query(ToneMarking).offset(skip).limit(limit).all()
+    result = await db.execute(select(ToneMarking).offset(skip).limit(limit))
+    history = result.scalars().all()
     
     return [
         ToneMarkingResponse(
