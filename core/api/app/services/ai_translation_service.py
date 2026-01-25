@@ -5,8 +5,8 @@ Uses OpenAI GPT models to provide context-aware translations.
 
 import json
 import logging
-from typing import Dict
-from openai import OpenAI
+from typing import Dict, Optional
+from openai import AsyncOpenAI
 from app.config import settings
 
 # Configure logging
@@ -18,11 +18,11 @@ class AITranslationService:
     """Service for AI-powered translations using OpenAI."""
     
     def __init__(self):
-        self.client = None
+        self.client: Optional[AsyncOpenAI] = None
         self.model = settings.ai_model
         
         if settings.openai_api_key:
-            self.client = OpenAI(api_key=settings.openai_api_key)
+            self.client = AsyncOpenAI(api_key=settings.openai_api_key)
             logger.info(
                 f"AI Translation Service initialized with model: {self.model}"
             )
@@ -31,7 +31,7 @@ class AITranslationService:
                 "OpenAI API key not found. AI translations will not work."
             )
     
-    def translate_to_yoruba(self, english_text: str) -> Dict[str, any]:
+    async def translate_to_yoruba(self, english_text: str) -> Dict[str, any]:
         """Translate English text to Yoruba using AI."""
         if not self.client:
             raise ValueError("OpenAI client not initialized. Check API key.")
@@ -39,7 +39,7 @@ class AITranslationService:
         try:
             prompt = self._create_translation_prompt(english_text)
             
-            response = self.client.chat.completions.create(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {
@@ -113,9 +113,9 @@ Respond in this JSON format:
 ai_translation_service = AITranslationService()
 
 
-def translate_to_yoruba(english_text: str) -> Dict[str, any]:
+async def translate_to_yoruba(english_text: str) -> Dict[str, any]:
     """Convenience function to translate English to Yoruba."""
-    return ai_translation_service.translate_to_yoruba(english_text)
+    return await ai_translation_service.translate_to_yoruba(english_text)
 
 
 def is_ai_available() -> bool:
