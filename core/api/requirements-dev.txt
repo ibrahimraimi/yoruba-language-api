@@ -21,7 +21,7 @@ mkdocs-material==9.4.8
 
 # Development tools
 pre-commit==3.5.0
-ipython==8.17.2
+ipython==8.39.0
 ipdb==0.13.13
 
 # Database tools
