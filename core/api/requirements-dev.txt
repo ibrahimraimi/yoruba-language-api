@@ -17,7 +17,7 @@ safety>=2.3.5
 
 # Documentation
 mkdocs==1.5.3
-mkdocs-material==9.4.8
+mkdocs-material==9.7.7
 
 # Development tools
 pre-commit==3.5.0
